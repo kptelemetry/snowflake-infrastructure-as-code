@@ -1,5 +1,8 @@
 ###############################################################################
-# Snowflake Account Bootstrap
+# Snowflake Account Bootstrap (template)
+#
+# Replace every <PLACEHOLDER> before use. Keep real values, keys and
+# passwords out of source control (terraform.tfvars / TF_VAR_* env vars).
 #
 # Terraform is the single owner of account-level infrastructure:
 #   1. Providers & variables
@@ -17,7 +20,7 @@
 # SECRETS: user passwords are supplied through the sensitive variable
 #          `user_passwords`, never committed to source control. Provide them via
 #          the environment, e.g.
-#            export TF_VAR_user_passwords='{"USR_JOHN_DOE":"...","USR_JANET_DOH":"...","USR_BRYAN_MCKNIGHT":"..."}'
+#            export TF_VAR_user_passwords='{"<USER_NAME_1>":"<PASSWORD_1>","<USER_NAME_2>":"<PASSWORD_2>"}'
 #          or a git-ignored secrets.auto.tfvars file.
 ###############################################################################
 
@@ -35,10 +38,10 @@ terraform {
 }
 
 locals {
-  organization_name = "nquayxa"
-  account_name      = "pn16900"
-  tf_user           = "USR_TERRAFORM_SVC"
-  private_key_path  = "~/My Documents/1_OSGS/AR_Snowflake/Admin/Terraform/2026/09/0917/tf/.ssh/snowflake_tf_snow_key.p8"
+  organization_name = "<SNOWFLAKE_ORGANIZATION_NAME>"
+  account_name      = "<SNOWFLAKE_ACCOUNT_NAME>"
+  tf_user           = "<TERRAFORM_SERVICE_USER>"
+  private_key_path  = "<PATH_TO_PRIVATE_KEY>.p8"
 
   etl_statement_timeout  = 172800 # 48 hours - long-running ETL/DBT workloads
   user_statement_timeout = 3600   # 1 hour   - interactive / BI workloads
@@ -608,26 +611,21 @@ resource "snowflake_network_policy" "azure_svc_policy" {
 ###############################################################################
 
 locals {
+  # Replace with real users. Keys are Snowflake user names; each key must also
+  # exist in var.user_passwords.
   users = {
-    USR_JOHN_DOE = {
-      first_name = "John"
-      last_name  = "Doe"
-      email      = "john.doe@dhs.kpt.org"
-      role       = "USR_ROLE_JOHN_DOE"
+    "<USER_NAME_1>" = {
+      first_name = "<FIRST_NAME_1>"
+      last_name  = "<LAST_NAME_1>"
+      email      = "<EMAIL_1>"
+      role       = "<USER_ROLE_1>"
       disabled   = false
     }
-    USR_JANET_DOH = {
-      first_name = "Janet"
-      last_name  = "Doh"
-      email      = "janet.doh@dhs.kpt.org"
-      role       = "USR_ROLE_JANET_DOH"
-      disabled   = false
-    }
-    USR_BRYAN_MCKNIGHT = {
-      first_name = "Bryan"
-      last_name  = "McKnight"
-      email      = "Bryan.Mcknight@dhs.kpt.org"
-      role       = "USR_ROLE_BRYAN_MCKNIGHT"
+    "<USER_NAME_2>" = {
+      first_name = "<FIRST_NAME_2>"
+      last_name  = "<LAST_NAME_2>"
+      email      = "<EMAIL_2>"
+      role       = "<USER_ROLE_2>"
       disabled   = true
     }
   }
