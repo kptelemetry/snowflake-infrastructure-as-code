@@ -272,68 +272,9 @@ resource "snowflake_schema" "admn_gov_schema" {
 }
 
 
-###############################################################################
-# 4. INTERNAL STAGES  (directory table enabled, CSV with header row)
-#    Recreated by `terraform apply` after each non-prod clone refresh.
-###############################################################################
-
-resource "snowflake_stage_internal" "stg_prd" {
-  name     = "STG_PRD"
-  database = snowflake_database.prod01_db.name
-  schema   = snowflake_schema.prod01_ingestion_schema.name
-  comment  = "Internal stage managed by Terraform"
-
-  directory {
-    enable = true
-  }
-
-  file_format {
-    csv {
-      field_delimiter = ","
-      skip_header     = 1
-    }
-  }
-}
-
-resource "snowflake_stage_internal" "stg_ppd" {
-  name     = "STG_PPD"
-  database = snowflake_database.uat01_db.name
-  schema   = snowflake_schema.uat01_ingestion_schema.name
-  comment  = "Internal stage managed by Terraform"
-
-  directory {
-    enable = true
-  }
-
-  file_format {
-    csv {
-      field_delimiter = ","
-      skip_header     = 1
-    }
-  }
-}
-
-resource "snowflake_stage_internal" "stg_tst" {
-  name     = "STG_TST"
-  database = snowflake_database.tst01_db.name
-  schema   = snowflake_schema.tst01_ingestion_schema.name
-  comment  = "Internal stage managed by Terraform"
-
-  directory {
-    enable = true
-  }
-
-  file_format {
-    csv {
-      field_delimiter = ","
-      skip_header     = 1
-    }
-  }
-}
-
 
 ###############################################################################
-# 5. ACCOUNT ROLES, HIERARCHY & WAREHOUSE GRANTS
+# 4. ACCOUNT ROLES, HIERARCHY & WAREHOUSE GRANTS
 #    Per-schema RO/RW/SVC roles are created by SP_SETUP_DATABASE_RBAC.
 #    NONPROD_* roles never receive PRD privileges.
 ###############################################################################
@@ -346,7 +287,7 @@ resource "snowflake_account_role" "role_nonprod_all" {
 
 resource "snowflake_account_role" "dss_etl_role" {
   provider = snowflake.securityadmin
-  name     = "RL_NONPROD_DSS_ETL"
+  name     = "RL_NONPROD_DEV_ETL"
   comment  = "Non-prod ETL developer role (no PRD access)"
 }
 
@@ -397,9 +338,9 @@ resource "snowflake_grant_account_role" "custom_to_sysadmin" {
 locals {
   warehouse_grants = {
     nonprod_all_oper = { role = snowflake_account_role.role_nonprod_all.name, wh = snowflake_warehouse.de_wh05.name }
-    dss_etl_xsm      = { role = snowflake_account_role.dss_etl_role.name, wh = snowflake_warehouse.de_wh01.name }
-    dss_etl_sml      = { role = snowflake_account_role.dss_etl_role.name, wh = snowflake_warehouse.de_wh02.name }
-    dss_etl_dbt      = { role = snowflake_account_role.dss_etl_role.name, wh = snowflake_warehouse.dbt_wh01.name }
+    dss_etl_xsm      = { role = snowflake_account_role.dev_etl_role.name, wh = snowflake_warehouse.de_wh01.name }
+    dss_etl_sml      = { role = snowflake_account_role.dev_etl_role.name, wh = snowflake_warehouse.de_wh02.name }
+    dss_etl_dbt      = { role = snowflake_account_role.dev_etl_role.name, wh = snowflake_warehouse.dbt_wh01.name }
     svc_etl_xsm      = { role = snowflake_account_role.svc_etl_role.name, wh = snowflake_warehouse.de_wh01.name }
     svc_etl_sml      = { role = snowflake_account_role.svc_etl_role.name, wh = snowflake_warehouse.de_wh02.name }
     svc_etl_med      = { role = snowflake_account_role.svc_etl_role.name, wh = snowflake_warehouse.de_wh03.name }

@@ -1,5 +1,5 @@
 /******************************************************************************
- * tpt_build.sql - Modern Enterprise Database Object Build (KPDW Account)
+ * Snowflake_Database_Objects.sql - Modern Enterprise Database Object Build (KPDW Account)
  *
  * Focus: Automated Data Governance, Precise RBAC Modeling, & Hardened Security Contexts
  ******************************************************************************/
