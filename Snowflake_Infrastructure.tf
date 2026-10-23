@@ -211,3 +211,4 @@ resource "snowflake_schema" "prod01_ingestion_schema" {
   database = snowflake_database.prod01_db.name
   name     = "DWA_ING"
 }
+
