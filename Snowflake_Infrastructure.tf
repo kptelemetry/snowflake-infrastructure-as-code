@@ -331,25 +331,6 @@ resource "snowflake_stage_internal" "stg_tst" {
   }
 }
 
-# TODO: Named STG_ADM but created in KPDWDEV - confirm target database.
-resource "snowflake_stage_internal" "stg_adm" {
-  name     = "STG_ADM"
-  database = snowflake_database.dev_db.name
-  schema   = snowflake_schema.dev_db_ingestion_schema.name
-  comment  = "Internal stage managed by Terraform"
-
-  directory {
-    enable = true
-  }
-
-  file_format {
-    csv {
-      field_delimiter = ","
-      skip_header     = 1
-    }
-  }
-}
-
 
 ###############################################################################
 # 5. ACCOUNT ROLES, HIERARCHY & WAREHOUSE GRANTS
