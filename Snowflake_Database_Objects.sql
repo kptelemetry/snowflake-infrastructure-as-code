@@ -83,7 +83,8 @@ ALTER USER USR_BRYAN_MCKNIGHT UNSET AUTHENTICATION POLICY;
 ALTER USER USR_BRYAN_MCKNIGHT SET AUTHENTICATION POLICY KPDWADM.DWA_ADM.AP_MFA_REQUIRED;
 
 -- Re-verify network policy attachment boundaries matching Terraform states
-ALTER USER USR_BRYAN_MCKNIGHT SET NETWORK_POLICY = NETWORK_POLICY_KPT_ALLOW;
+-- ALTER USER USR_BRYAN_MCKNIGHT SET NETWORK_POLICY = NETWORK_POLICY_KPT_ALLOW;
+-- Network policy DDL removed from public version
 
 
 /*=============================================================================
