@@ -1,4 +1,3 @@
-
 ###############################################################################
 # Snowflake Account Bootstrap (Production-Hardened Framework)
 #
@@ -12,7 +11,7 @@
 terraform {
   required_providers {
     snowflake = {
-      source  = "Snowflake-Labs/snowflake"
+      source  = "Snowflakedb/snowflake"
       version = "~> 1.0"
     }
   }
@@ -285,9 +284,15 @@ resource "snowflake_account_role" "role_nonprod_all" {
   comment  = "Non-prod read-only role (no PRD access)"
 }
 
-resource "snowflake_account_role" "dss_etl_role" {
+resource "snowflake_account_role" "role_prod_all" {
   provider = snowflake.securityadmin
-  name     = "RL_NONPROD_DEV_ETL"
+  name     = "RL_PROD_ALL_READONLY"
+  comment  = "Non-prod read-only role (no PRD access)"
+}
+
+resource "snowflake_account_role" "etl_role" {
+  provider = snowflake.securityadmin
+  name     = "RL_ETL_ADMIN"
   comment  = "Non-prod ETL developer role (no PRD access)"
 }
 
@@ -319,7 +324,8 @@ resource "snowflake_account_role" "git_admin_role" {
 locals {
   custom_roles = {
     nonprod_all = snowflake_account_role.role_nonprod_all.name
-    dss_etl     = snowflake_account_role.dss_etl_role.name
+    prod_all    = snowflake_account_role.role_prod_all.name
+    etl_admn    = snowflake_account_role.etl_role.name
     svc_etl     = snowflake_account_role.svc_etl_role.name
     purview     = snowflake_account_role.purview_role.name
     tag_admin   = snowflake_account_role.tag_admin_role.name
@@ -338,9 +344,10 @@ resource "snowflake_grant_account_role" "custom_to_sysadmin" {
 locals {
   warehouse_grants = {
     nonprod_all_oper = { role = snowflake_account_role.role_nonprod_all.name, wh = snowflake_warehouse.de_wh05.name }
-    dss_etl_xsm      = { role = snowflake_account_role.dev_etl_role.name, wh = snowflake_warehouse.de_wh01.name }
-    dss_etl_sml      = { role = snowflake_account_role.dev_etl_role.name, wh = snowflake_warehouse.de_wh02.name }
-    dss_etl_dbt      = { role = snowflake_account_role.dev_etl_role.name, wh = snowflake_warehouse.dbt_wh01.name }
+    prod_all_oper    = { role = snowflake_account_role.role_prod_all.name, wh = snowflake_warehouse.de_wh05.name }
+    etl_admn_xsm     = { role = snowflake_account_role.etl_role.name, wh = snowflake_warehouse.de_wh01.name }
+    etl_admn_sml     = { role = snowflake_account_role.etl_role.name, wh = snowflake_warehouse.de_wh02.name }
+    etl_admn_dbt     = { role = snowflake_account_role.etl_role.name, wh = snowflake_warehouse.dbt_wh01.name }
     svc_etl_xsm      = { role = snowflake_account_role.svc_etl_role.name, wh = snowflake_warehouse.de_wh01.name }
     svc_etl_sml      = { role = snowflake_account_role.svc_etl_role.name, wh = snowflake_warehouse.de_wh02.name }
     svc_etl_med      = { role = snowflake_account_role.svc_etl_role.name, wh = snowflake_warehouse.de_wh03.name }
